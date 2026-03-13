@@ -1,3 +1,4 @@
+import json 
 class Expenses:
     def __init__(self, name, category, amount):
         self.name = name
@@ -9,9 +10,34 @@ class Expenses:
 
 
 class ExpenseTracker:
-    def __init__(self):
+    def __init__(self, filename = "expense.json" ):
         self.expenses = []
+        self.filename = filename
+        self.load_expense() # automatically load data
+
         
+    def save_expense(self):
+        data = []
+        for expense in self.expenses:
+            data.append({
+                "name": expense.name,
+                "category": expense.category,
+                "amount": expense.amount
+            })
+        with open(self.filename, "w") as f:
+            json.dump(data, f, indent=4)
+            print("data saved successfully")
+    
+    def load_expense(self):
+        try:
+            with open(self.filename, "r") as f:
+                data = json.load(f)
+                for item in data:
+                    expense = Expenses(item["name"], item["category"], item["amount"])
+                    self.expenses.append(expense)          
+        except FileNotFoundError: 
+             self.expenses = []    
+    
     def show_expense(self):
         if not self.expenses:
             print("No expenses added.")
@@ -22,6 +48,7 @@ class ExpenseTracker:
     def add_expense(self, add_name, add_category, add_amount):
         user_expense = Expenses(add_name, add_category, add_amount)
         self.expenses.append(user_expense)
+        self.save_expense()  # save immediately
         print("Expense added successfully.")
         
     def update_expense(self, index, field, new_value):
@@ -40,7 +67,8 @@ class ExpenseTracker:
                 expense.amount = new_value
                 
             print("Expense updated successfully.")
-    
+            self.save_expense()  # save immediately
+            print("Expense added successfully.")
     
     def total_expense(self):
         if not self.expenses:
@@ -50,7 +78,6 @@ class ExpenseTracker:
             for expense in self.expenses:
                 total += expense.amount
             print(f"Total expense: {total}")
-
     
     def delete_expense(self, user_delete):
         if not self.expenses:
@@ -60,7 +87,9 @@ class ExpenseTracker:
         else:
             deleted = self.expenses.pop(user_delete)
             print(f"Expense deleted: {deleted}")
-
+            self.save_expense()  # save immediately
+            print("Expense added successfully.")
+    
 expense_tracker = ExpenseTracker()
 
 
