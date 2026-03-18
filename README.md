@@ -7,6 +7,7 @@ A simple command-line Expense tracker built with Python and OOP.
 - Case-insensitive search
 - Object-Oriented Programming structure
 - Json to load and save data 
+- API integration
 
 ## How to Run
 1. Make sure Python is installed
@@ -17,5 +18,4 @@ A simple command-line Expense tracker built with Python and OOP.
 
 ## Future Improvements
 - Flask web interface
-- API integration
 
