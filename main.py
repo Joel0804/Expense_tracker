@@ -9,14 +9,12 @@ class Expenses:
     def __str__(self):
         return f"{self.name} | {self.category} | {self.amount}"
 
-
 class ExpenseTracker:
     def __init__(self, filename = "expense.json" ):
         self.expenses = []
         self.filename = filename
         self.load_expense() # automatically load data
 
-        
     def save_expense(self):
         data = []
         for expense in self.expenses:
