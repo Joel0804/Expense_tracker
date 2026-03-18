@@ -1,4 +1,5 @@
 import json 
+import requests
 class Expenses:
     def __init__(self, name, category, amount):
         self.name = name
@@ -37,7 +38,18 @@ class ExpenseTracker:
                     self.expenses.append(expense)          
         except FileNotFoundError: 
              self.expenses = []    
-    
+             
+    def foreign_add_user(self, name, category, amount, currency):
+        response = requests.get(f"https://api.exchangerate-api.com/v4/latest/{currency.upper()}")
+        data = response.json()
+        if 'error_type' in data:
+            print("Invalid currency code. Please try again.")
+        else:
+            inr_rate = data["rates"]["INR"]
+            amount_inr = amount * inr_rate
+            self.add_expense(name, category, round(amount_inr, 2))
+            print(f"Converted {amount} {currency} → ₹{amount_inr:.2f} INR")
+        
     def show_expense(self):
         if not self.expenses:
             print("No expenses added.")
@@ -66,19 +78,16 @@ class ExpenseTracker:
             elif field == 'amount':
                 expense.amount = new_value
                 
-            print("Expense updated successfully.")
             self.save_expense()  # save immediately
-            print("Expense added successfully.")
-    
+            print("Expense updated successfully.")
+        
     def total_expense(self):
         if not self.expenses:
             print("No expenses recorded.")
         else:
-            total = 0
-            for expense in self.expenses:
-                total += expense.amount
-            print(f"Total expense: {total}")
-    
+            total = sum(float(expense.amount) for expense in self.expenses)
+            print(f"Total expense: ₹{total:.2f}")
+            
     def delete_expense(self, user_delete):
         if not self.expenses:
             print("No expenses to delete.")
@@ -88,13 +97,12 @@ class ExpenseTracker:
             deleted = self.expenses.pop(user_delete)
             print(f"Expense deleted: {deleted}")
             self.save_expense()  # save immediately
-            print("Expense added successfully.")
+            print("Expense deleted successfully.")
     
 expense_tracker = ExpenseTracker()
 
-
 while True:
-    print("\n1. SHOW \n2. ADD\n3. UPDATE \n4. SUM \n5. DELETE \n6. EXIT")
+    print("\n1. SHOW \n2. ADD\n3. UPDATE \n4. SUM \n5. DELETE \n6. FOREIGN ADD \n7. EXIT")
     choice = input("Choose a number to perform the operation: ").strip()
     
     if choice == '1':
@@ -135,7 +143,14 @@ while True:
         expense_tracker.show_expense()
         user_delete = int(input("Enter index to delete: ")) - 1
         expense_tracker.delete_expense(user_delete)
-        
+    
     elif choice == '6':
+        name = input("Enter a name: ")
+        category = input("Enter a category: ")
+        amount = int(input("Enter a amount: "))
+        add_currency = input("Enter a currency usd, eur etc: ")
+        expense_tracker.foreign_add_user(name, category, amount, add_currency)
+        
+    elif choice == '7':
         print("Exiting program.")
         break

@@ -6,6 +6,7 @@ A simple command-line Expense tracker built with Python and OOP.
 - Show all expenses
 - Case-insensitive search
 - Object-Oriented Programming structure
+- Json to load and save data 
 
 ## How to Run
 1. Make sure Python is installed
@@ -15,7 +16,6 @@ A simple command-line Expense tracker built with Python and OOP.
    python main.py
 
 ## Future Improvements
-- File handling to save contacts
 - Flask web interface
 - API integration
 
